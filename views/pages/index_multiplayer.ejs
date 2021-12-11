@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>War Vessels</title>
+    <meta name='author' content="Manas Sarpatwar">
+    <meta name="description" content="War vessels game in browser">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../public/css/multiplayer.css" />
+    <script language="javascript" type="text/javascript" src="../public/js/sketch.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/Canvas.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/PlayerCanvas.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/OpponentCanvas.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/Piece.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/Player.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/helpers.js"></script>
+    <script language="javascript" type="text/javascript" src="../public/js/WaterWave.js"></script>
+
+</head>
+
+<body>
+    <main>
+        <button onclick="tutorial()" class="noDisplay" style="right:60px"><p>?</p></button>
+        <section id = "dropdown-info" class = "noDisplay">
+            
+        </section>
+        <section id="help-info">
+            <p class = "noDisplay">Rules</p><button id="close" onclick="tutorial()" class="square-button create cross button-top-right"></button>
+            <ol>
+                <li>War Vessels is played by 2 players</li>
+                <li>It is a game of guessing where the opponent has placed their ships</li>
+                <li><img alt='hit' src='../public/img/hit.png' class='help-icons'> is a hit and <img alt='miss'
+                        src='../public/img/miss.png' class='help-icons'> is a miss</li>
+                <li>Ships sink when they cannot survive another attack</li>
+                <li>Game is over when either all your ships or your opponent's ships have sunk</li>
+            </ol>
+            <p class = 'help-info-heading'>Instructions</p>
+            <ol>
+                <li>Drag ships to place them</li>
+                <li><span class='touch'></span> on ships to rotate them</li>
+                <li><span class='touch'></span> on the opponent's board to attack</li>
+            </ol>
+        </section>
+        <section id="info" class = "noDisplay">
+            <button id="playButton" class="button noDisplay info-element"> Ready </button>
+            <p id="infoPara" class = "info-element"></p>
+        </section>
+        <section id="board" class = "noDisplay">
+            <div id="player" class = "boards">
+                <div id="patrol" draggable="false" class="interactable piece loadingImg">
+                    <div id = "patrol-img" class = "piece-img"></div>
+                </div>
+                <div id="submarine" draggable="false" class="interactable piece loadingImg">
+                    <div id = "submarine-img" class = "piece-img"></div>
+                </div>
+                <div id="destroyer" draggable="false" class="interactable piece loadingImg">
+                    <div id = "destroyer-img" class = "piece-img"></div>
+                </div>
+                <div id="battleship" draggable="false" class="interactable piece loadingImg">
+                    <div id = "battleship-img" class = "piece-img"></div>
+                </div>
+                <div id="carrier" draggable="false" class="interactable piece loadingImg">
+                    <div id = "carrier-img" class = "piece-img"></div>
+                </div class="boards">
+                <canvas id="playerCanvas" ></canvas>
+            </div>
+            <div id="opponent" class = " noDisplay">
+                <div id="won" class="noDisplay won-lose"> YOU WON </div>
+                <div id="patrol1" draggable="false" class="interactable piece loadingImg">
+                    <div id = "patrol1-img" class = "piece-img"></div>
+                </div>
+                <div id="submarine1" draggable="false" class="interactable piece loadingImg">
+                    <div id = "submarine1-img" class = "piece-img"></div>
+                </div>
+                <div id="destroyer1" draggable="false" class="interactable piece loadingImg">
+                    <div id = "destroyer1-img" class = "piece-img"></div>
+                </div>
+                <div id="battleship1" draggable="false" class="interactable piece loadingImg">
+                    <div id = "battleship1-img" class = "piece-img"></div>
+                </div>
+                <div id="carrier1" draggable="false" class="interactable piece loadingImg">
+                    <div id = "carrier1-img" class = "piece-img"></div>
+                </div>
+                <div id="lose" class="noDisplay won-lose"> YOU LOSE </div>
+                <canvas id="opponentCanvas" >
+                    <audio id='audio' ></audio>
+                </canvas>
+            </div>
+        </section>
+    </main>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    function transform1(el){
+        const d = getComputedStyle(el).transform.split(',').map(d => parseInt(d));
+        r =  Math.round(Math.asin(d[1]) * (180/Math.PI)) ;
+        x = d[4]/2 ;
+        y = d[5]/2 ;
+        el.style.transform =  "translate("+x+"px, "+y+"px) rotate("+r+"deg)";
+    };
+    let opponent="<%= opponent %>";
+    let data="<%= result %>";
+    if(data==="0" || data==="1"){
+        document.getElementById("battleship1").classList.add('loadingImg');
+        document.getElementById("carrier1").classList.add('loadingImg');
+        document.getElementById("submarine1").classList.add('loadingImg');
+        document.getElementById("destroyer1").classList.add('loadingImg');
+        document.getElementById("patrol1").classList.add('loadingImg');
+    }
+    document.getElementById("help-info").className= "noDisplay";
+    global.gameID = "<%= gameID %>";
+    global.playerID = "<%= playerID %>";    
+    document.getElementById("playButton").addEventListener("click", sizechange);
+    function sizechange() { 
+      document.getElementById("opponent").className= "boards";
+      document.getElementById("player").classList.toggle("smallD");
+      for(var i=0;i<5;i++){
+        let el=select("#"+global.player.pieces[i].name);
+        transform1(el);
+      }
+      if (data!=="0" && data!=="1"){
+      opponent=opponent.split(",");
+      let arr=[];      
+      let k=0;
+      for(let i=0; i<10; i++){
+        let x=[]
+        for(let j=0; j<10; j++){
+            x.push(opponent[k]!=="miss"?Number(opponent[k]):"miss");
+            k++;
+        }
+        arr.push(x);
+      }
+    let ar=[2,3,3,4,5];
+    let flag=false;
+    for(const c of arr){
+        for(const x of c) {
+            if(x<0) {
+                ar[-x -1]--;                                      
+                if(ar[-x -1] === 0){
+                    flag=true;
+                }
+            }
+        }
+    }
+    if(flag){
+        for(var i=0;i<5;i++) {
+            if(ar[i]==0){
+                for(let j=0;j<arr.length;j++){
+                    let f2=false;
+                    for(let k=0;k<arr[j].length;k++){
+                        if(arr[j][k]===-i-1 || arr[j][k]===i+1){
+                            let r=(j<9 && arr[j+1][k]===arr[j][k])?0:90;
+                            // r=Math.round(Math.asin(r) * (180/Math.PI));
+                            const csize=document.getElementById('opponentCanvas').width/10 ;
+                            const cx=document.getElementById('opponentCanvas').width/10 * k;
+                            const cy=document.getElementById('opponentCanvas').width/10 * j;
+                            if(r===90){
+                                select("#"+global.player.pieces[i].name+"1").style.transformOrigin=`${csize/2}px ${csize/2}px`;
+                                console.log(global.player.pieces[i].length);
+
+                                select("#"+global.player.pieces[i].name+"1").style.transform =  "translate("+(cx+(global.player.pieces[i].length-1)*csize)+"px, "+cy+"px) rotate("+r+"deg)";
+                            }
+                            else{
+                                select("#"+global.player.pieces[i].name+"1").style.transform =  "translate("+cx+"px, "+cy+"px) rotate("+0+"deg)";   
+                            }
+                            document.getElementById(global.player.pieces[i].name+"1").classList.remove('loadingImg');            
+                            f2=true;
+                            break;
+                        }
+                    }
+                    if(f2) {break;}
+                }
+                
+            }
+        }    
+    }
+      
+    }
+    }
+
+
+    const json = <%- JSON.stringify(data) %>;
+    document.addEventListener("DOMContentLoaded", function(){
+      if(json && json.ready) 
+      {
+        setTimeout(()=>sizechange(),500);
+      }
+    });
+    const buttons = document.getElementsByTagName('button');
+    for (const button of buttons) {
+        button.addEventListener('touchstart', () => { button.click() });
+    }
+
+    function is_touch_device() {
+        return 'ontouchstart' in window;
+    }
+
+    const touchElements = document.getElementsByClassName('touch');
+    for (const t of touchElements) {
+        const text = is_touch_device() ? 'Tap' : 'Click';
+        t.appendChild(document.createTextNode(text));
+    }
+          
+</script>
+
+</html>

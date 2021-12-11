@@ -1,0 +1,629 @@
+:root {
+    --cellsize: 0px;
+    --cellsizepx: 0px;
+    --canvas-size: 0px;
+    --font-size: 22px;
+    --info-width: 380px;
+    --button-background: #222;
+    --button-color: #eee;
+}
+
+html,
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #eee;
+    width: 100vw;
+    height: 100vh;   
+    background: url("../img/Background_.png") ; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+body::before {
+    content: "";
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.5);
+    transition: opacity 1s ease;
+
+}
+@keyframes blink {
+    0% {
+        box-shadow: 0 0 40px #ffff00;
+    }
+    50% {
+        box-shadow: none;
+    }
+    100% {
+        box-shadow: 0 0 40px #ffff00;
+    }
+}
+@-webkit-keyframes blink {
+    0% {
+        box-shadow: 0 0 40px #ffff00;
+    }
+    50% {
+        box-shadow: 0 0 0;
+    }
+    100% {
+        box-shadow: 0 0 40px #ffff00;
+    }
+}
+.blink {
+    -webkit-animation: blink 1.0s linear infinite;
+    -moz-animation: blink 1.0s linear infinite;
+    -ms-animation: blink 1.0s linear infinite;
+    -o-animation: blink 1.0s linear infinite;
+    animation: blink 1.0s linear infinite;
+}
+
+body.overlay::before {
+    opacity: 1;
+    z-index: 2;
+}
+
+p {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: inline-block;
+    font-size: 20px;
+    margin: 0;
+    border: none;
+    outline: none;
+    color: white;
+}
+
+main {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    
+}
+
+.noDisplay {
+    display: none;
+}
+
+
+/*============ BUTTONS ============*/
+button {
+    background: var(--button-background);
+    color: var(--button-color);
+    border: none;
+    outline: none;
+	margin: 0;
+	padding: 0;
+	border-radius: .1875em;
+	transition: background-color 0.2s ease;
+}
+#playButton {
+    background:url("../img/Button_Hover.png");
+    background-size: cover;
+    width: 120px;
+    height: 31px;
+    color: black;
+    font-size: 20px;
+
+}
+#playButton p{
+    color: black;
+    font-size: 18px;   
+}
+button:hover {
+    background: var(--button-color);
+    color: var(--button-background);
+}
+
+.button-top-right {
+    position: absolute;
+    right: 40px;
+    top: 0;
+    transform: translate(-25%, 25%);
+}
+
+.square-button {
+    padding: 0;
+    margin: 0;
+    width: calc(var(--font-size)*2);
+    height: calc(var(--font-size)*2);
+    text-align: center;
+    line-height: 100%;
+}
+
+button:hover.create::after, button:hover.create::before{
+	background: var(--button-background);
+}
+
+.won-lose{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-126)/var(--unnamed-line-spacing-168) var(--unnamed-font-family-segoe-ui);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-ffffff);
+    text-align: center;
+    font: normal normal bold 50px/50px Segoe UI;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-shadow: 0px 15px 40px #00000069;
+    text-transform: uppercase;
+    opacity: 1;
+    padding-top: var(--cellsize);
+}
+.create::after,
+.create::before {
+    content: " ";
+    position: absolute;
+    display: block;
+    background-color: #eee;
+    border-radius: .1875em;
+}
+
+.create::after {
+    height: 50%;
+    width: 5%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.create::before {
+    height: 5%;
+    width: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.cross::after,
+.cross::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.plus::after,
+.plus::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/*=====================================================*/
+
+/*====================== Help info ====================*/
+#help-info {
+    position: absolute;
+    width: var(--info-width);
+    padding: 20px;
+    background: #eee;
+    border-radius: 5px;
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    z-index: -1;
+    opacity: 0;
+    left: 50%;
+    top: 35%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s ease;
+}
+
+#help-info.show {
+    z-index: 2;
+    opacity: 1;
+}
+
+ol,
+li {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: calc(var(--font-size)*0.9);
+	font-weight: 300;
+}
+
+ol {
+	margin: 0 auto;
+	padding-left: 7.5%;
+}
+
+.help-icons:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.help-icons {
+    vertical-align: middle;
+    width: var(--font-size);
+    height: var(--font-size);
+}
+
+.help-info-heading {
+    margin: 0 auto;
+    font-size: calc(var(--font-size)*1.1);
+}
+
+.help-info-heading:nth-child(1) {
+    padding-top: 0;
+}
+
+.help-info-heading:after {
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 2px;
+    background: #222;
+    transition: width 0.3s ease 0s;
+    width: 0;
+    border-radius: 2.5em;
+}
+
+.help-info-heading.underline:after {
+    width: 100%;
+}
+
+/*================================================================*/
+
+/*============= Canvas =========*/
+canvas {
+    border-radius: 5px;
+    box-shadow: 0 0 50px 2px rgba(0, 0, 0, 0.30);
+    width: var(--canvas-size);
+    background: #48A0E2;
+    height: var(--canvas-size);
+}
+
+#board {
+    display: flex;
+    flex-direction: row;
+}
+
+#board.noDisplay{
+    opacity: 0;
+}
+
+.boards {
+    position: relative;
+    margin: 0 20px;
+}
+
+#info {
+    margin-bottom: 1%;
+    display: flex;
+    padding-left: 17%;
+    padding-top: 10px;
+    padding-right: 17%;
+    flex-direction: column-reverse;
+    text-align: center;
+    justify-content: center;
+}
+
+#info.noDisplay{
+    opacity: 0;
+}
+
+#info .end{
+    font-size: calc(var(--font-size)*1.3);
+}
+
+/*===================================*/
+
+/*============== Pieces ================*/
+
+
+
+#player .loadingImg {
+    display: none;
+}
+
+#player .piece {
+    position: absolute;
+    opacity: 0.9;
+    margin: 0px;
+    padding: 0px;
+	background-repeat: no-repeat;
+	z-index: 1;
+}
+
+#player .piece .piece-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    padding: 0;
+    background-size: 100% 100%;
+    background-position: center;
+    transform: translate(-50%, -50%);
+    -webkit-filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+}
+
+#player .pickedup .piece-img {
+    -webkit-filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+}
+
+
+#patrol {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*2);
+    transform: translate(-100%, calc(var(--canvas-size) - calc(50%*8)));
+}
+
+
+#patrol .piece-img {
+    width: 50%;
+    height: 60%;
+    background: url("../img/ships/png/patrol.png");
+    transform: translate(-50%, -50%);
+}
+
+#submarine {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*3);
+    transform: translate(-100%, calc(var(--canvas-size) - 200%));
+}
+
+#submarine .piece-img {
+    width: 70%;
+    height: 70%;
+    background: url("../img/ships/png/submarine.png");
+    transform: translate(-50%, -50%);
+}
+
+#destroyer {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*3);
+    transform: translate(-100%, calc(var(--canvas-size) - 100%));
+}
+
+#destroyer .piece-img {
+    width: 70%;
+    height: 70%;
+    background: url("../img/ships/png/destroyer.png");
+    transform: translate(-50%, -50%);
+}
+
+#battleship {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*4);
+    transform: translate(calc(var(--cellsizepx)*6.5), calc(calc(var(--canvas-size) - 50%) + var(--cellsize)*1.5));
+}
+
+#battleship .piece-img {
+    width: 75%;
+    height: 80%;
+    background: url("../img/ships/png/battleship.png");
+    transform: translate(-50%, -50%);
+}
+
+#carrier {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*5);
+    transform: translate(calc(var(--cellsizepx)*2), calc(calc(var(--canvas-size) - 50%) + var(--cellsize)*1.25));
+}
+
+#carrier .piece-img {
+    width: 100%;
+    height: 85%;
+    background: url("../img/ships/png/carrier.png");
+    transform: translate(-50%, -50%);
+}
+
+#opponent .loadingImg {
+    display: none;
+}
+
+#opponent .piece {
+    position: absolute;
+    opacity: 0.9;
+    margin: 0px;
+    padding: 0px;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+#opponent .piece .piece-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    padding: 0;
+    background-size: 100% 100%;
+    background-position: center;
+    transform: translate(-50%, -50%);
+    -webkit-filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+}
+
+#opponent .pickedup .piece-img {
+    -webkit-filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+}
+#patrol1 {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*2);
+    transform: translate(-100%, calc(var(--canvas-size) - calc(50%*8)));
+}
+
+
+#patrol1 .piece-img {
+    width: 50%;
+    height: 60%;
+    background: url("../img/ships/png/patrol.png");
+    transform: translate(-50%, -50%);
+    opacity: 0.45;
+}
+
+#submarine1 {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*3);
+    transform: translate(-100%, calc(var(--canvas-size) - 200%));
+}
+
+#submarine1 .piece-img {
+    width: 70%;
+    height: 70%;
+    background: url("../img/ships/png/submarine.png");
+    transform: translate(-50%, -50%);
+    opacity: 0.45;
+}
+
+#destroyer1 {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*3);
+    transform: translate(-100%, calc(var(--canvas-size) - 100%));
+}
+
+#destroyer1 .piece-img {
+    width: 70%;
+    height: 70%;
+    background: url("../img/ships/png/destroyer.png");
+    transform: translate(-50%, -50%);
+    opacity: 0.45;
+}
+
+#battleship1 {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*4);
+    transform: translate(calc(var(--cellsizepx)*6.5), calc(calc(var(--canvas-size) - 50%) + var(--cellsize)*1.5));
+}
+
+#battleship1 .piece-img {
+    width: 75%;
+    height: 80%;
+    background: url("../img/ships/png/battleship.png");
+    transform: translate(-50%, -50%);
+    opacity: 0.45;
+}
+
+#carrier1 {
+    width: var(--cellsize);
+    height: calc(var(--cellsize)*5);
+    transform: translate(calc(var(--cellsizepx)*2), calc(calc(var(--canvas-size) - 50%) + var(--cellsize)*1.25));
+}
+
+#carrier1 .piece-img {
+    width: 100%;
+    height: 85%;
+    background: url("../img/ships/png/carrier.png");
+    transform: translate(-50%, -50%);
+    opacity: 0.45;
+}
+
+/*==============================================================*/
+
+/*=================Multiple sessions=============================*/
+#dropdown-info {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: min(90vw, 90vh);
+    padding: 1% 2%;
+    box-shadow: 0 0 50px 2px rgba(0, 0, 0, 0.30);
+    z-index: 3;
+    background: #eee;
+    text-align: center;
+    transition: transform 1s ease;
+}
+
+#dropdown-info p {
+    display: inline-block;
+    text-align: left;
+}
+
+#dropdown-info.active {
+    transform: translate(-50%, 0%);
+    transition: transform 1s ease;
+}
+.smallD{
+    position: relative;
+    --canvas-size: 40vw !important;
+    align-self: flex-end; 
+}
+
+/*=================================================================*/
+
+@media only screen and (max-width: 600px) {
+    :root {
+        /*--canvas-size: 42vh;*/
+        --canvas-size: 80vw !important;
+
+        --info-width: 320px;
+    }
+
+    canvas {
+        box-shadow: 0 0 25px 1px rgba(0, 0, 0, 0.30);
+    }
+
+    #board {
+        flex-direction: column-reverse;
+    }
+
+    .boards {
+        margin: 1px 0;
+    }
+
+    #battleship {
+        transform: translate(calc(12.5% + var(--canvas-size)), calc(var(--canvas-size) - var(--cellsizepx)*9));
+    }
+
+    #carrier {
+        transform: translate(calc(12.5% + var(--canvas-size)), calc(var(--canvas-size) - var(--cellsizepx)*5));
+    }
+}
+
+@media only screen and (max-width: 450px) {
+    :root {
+        --font-size: 20px;
+        --info-width: 300px;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    :root {
+        --font-size: 18px;
+        --info-width: 250px;
+    }
+}
+
+
+dot-pulse span {
+	animation-name: pulse;
+	animation-duration: 1.4s;
+	animation-iteration-count: infinite;
+	animation-fill-mode: both;
+}
+
+/*================dots animation =================*/
+@keyframes pulse {
+	0% {
+		opacity: .2;
+	}
+	20% {
+		opacity: 1;
+	}
+	100% {
+		opacity: .2;
+	}
+}
+
+.dot-pulse span:nth-child(2) {
+	animation-delay: .2s;
+}
+
+.dot-pulse span:nth-child(3) {
+	animation-delay: .4s;
+}
