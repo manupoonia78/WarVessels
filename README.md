@@ -15,12 +15,4 @@ Resources I found useful when animating water
 3. [Water ripple FX with Canvas and Javascript by Almeros](https://code.almeros.com/water-ripple-canvas-and-javascript/)
 4. [2D water ripple by The Coding Train](https://www.youtube.com/watch?v=BZUdGqeOD0w)
 
-## Acknowledgements
-I want to thank [Juha Lindstedt](https://github.com/pakastin) and [Mrwan Ashraf](https://github.com/mrwanashraf) for supporting me through this project.
 
-
-## License
-
-[MIT](http://opensource.org/licenses/MIT)
-
-Copyright (c) 2020-present [Manas Sarpatwar](https://github.com/manassarpatwar)
